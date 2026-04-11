@@ -2,7 +2,7 @@
 title: "GMPNN-CS++: A Novel Dual-Contrasting Framework for Drug-Drug Interaction Prediction"
 date: 2024-12-01
 author: "Forrest Chai"
-description: "The proposed GMPNN-CS++ model introduces a dual-contrasting sampling approach and self-attention mechanism for DDI prediction, achieving 97% overall accuracy. This research led to selection as a Regeneron Science Talent Search Scholar."
+description: "The proposed GMPNN-CS++ model introduces a dual-contrasting sampling approach and self-attention mechanism for DDI prediction, achieving 97% overall accuracy."
 categories: "gmpnn"
 tags: ["Research"]
 keywords: ["GMPNN-CS++", "drug-drug interaction", "graph neural network", "contrastive learning", "self-attention"]
@@ -32,5 +32,9 @@ Through dual-contrasting, GMPNN-CS++ demonstrates an ability to capture addition
 - Self-attention module for enhanced cross-substructure representation
 - Residual memory network for improved feature extraction
 - 97% overall accuracy in DDI prediction
+
+## Recognition
+
+This research led to selection as a **Regeneron Science Talent Search Scholar '25**, the nation's oldest and most prestigious science and math competition for high school seniors ($2,000 scholar award and $2,000 school award).
 
 <a href="/research/gmpnn-cs-plus-plus.pdf" class="pdf-download" target="_blank">Download Full Paper (PDF)</a>
