@@ -1,0 +1,417 @@
+{{ define "main" }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+{{- if .Site.Params.homeInfoParams }}
+    {{- partial "home_info.html" . }}
+{{- end }}
+
+<!-- About Me Section -->
+<h2>About Me</h2>
+<div class="about-section">
+    <p>CS, Math & HCI @ Northwestern. Regeneron Science Talent Search Scholar '25. Founding engineer at <a href="https://crowdlisten.com" target="_blank">CrowdListen</a>, building the shared context layer that turns social conversations into structured intelligence for AI agents.</p>
+    <p>My research spans drug-drug interaction prediction with graph neural networks and mathematical modeling competitions. In my free time, I photograph sunsets by the sea and chase the Milky Way. Always happy to chat.</p>
+
+    <div class="map-section">
+        <div id="journey-map"></div>
+        <div class="map-navigation">
+            <button id="next-location" class="nav-button">
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Skills Section -->
+<h2>Skills</h2>
+<div class="skills-section">
+    <div class="skills-grid">
+        <div class="skill-category">
+            <h4>Product</h4>
+            <p>Prototyping, Roadmapping, User Research, A/B Testing, SQL, Figma, JIRA</p>
+        </div>
+        <div class="skill-category">
+            <h4>Programming</h4>
+            <p>Python, C/C++, JavaScript, HTML/CSS, Git, React.js, Node.js, TensorFlow, PyTorch</p>
+        </div>
+        <div class="skill-category">
+            <h4>ML & Research</h4>
+            <p>Neural Networks, K-Means Clustering, Mathematical Modeling, PDEs, Optimization</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for location details -->
+<div id="location-modal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close">&times;</button>
+        <h2 id="modal-title"></h2>
+        <div id="modal-description"></div>
+    </div>
+</div>
+
+<!-- Recent Posts Section -->
+<div class="recent-posts">
+    <h2>Recent Posts</h2>
+    {{- $recentPosts := where site.RegularPages "Type" "posts" }}
+    {{- if $recentPosts }}
+    <div class="posts-grid">
+        {{- range first 3 $recentPosts }}
+        <article class="post-entry">
+            <header class="entry-header">
+                <h2>{{ .Title }}</h2>
+            </header>
+            <div class="entry-content">
+                {{ if .Description }}{{ .Description | plainify | htmlUnescape | truncate 250 }}{{ else }}{{ .Summary | plainify | htmlUnescape }}{{ end }}
+            </div>
+            <footer class="entry-footer">
+                <div class="post-meta">
+                    <time>{{ .Date.Format "January 2, 2006" }}</time>
+                    {{- if (.Param "ShowReadingTime") }} &bull; {{ .ReadingTime }} min read{{- end }}
+                </div>
+            </footer>
+            <a class="entry-link" href="{{ .RelPermalink }}"></a>
+        </article>
+        {{- end }}
+    </div>
+    {{- else }}
+    <p class="no-posts-yet">Posts coming soon. Stay tuned!</p>
+    {{- end }}
+</div>
+
+<div class="find-more-posts">
+    <p>To view all posts, please visit the <a href="/posts/">Posts</a> section.</p>
+</div>
+
+<style>
+.about-section {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: var(--entry);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.about-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--secondary);
+    margin-bottom: 2rem;
+}
+
+.about-section a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.skills-section {
+    background: var(--entry);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 3rem 0;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.skill-category {
+    padding: 1rem;
+    background: var(--theme);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.skill-category h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+.skill-category p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--secondary);
+    margin: 0;
+}
+
+.map-section {
+    position: relative;
+    margin: 2rem 0 0;
+    height: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#journey-map {
+    height: 100%;
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.map-navigation {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1000;
+}
+
+.nav-button {
+    background: var(--entry);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+    background: var(--border);
+}
+
+.map-card {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 180px;
+    transform: translate(-50%, -100%);
+    margin-top: -10px;
+}
+
+.map-card h4 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.map-card p {
+    color: var(--secondary);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.map-card:hover {
+    transform: translate(-50%, -100%) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--entry);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+    border: 1px solid var(--border);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.company-details { color: var(--secondary); }
+.company-details strong { color: var(--primary); }
+
+.leaflet-control-attribution { display: none !important; }
+
+.recent-posts {
+    margin: 3rem 0;
+    width: 100%;
+}
+
+.posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+}
+
+.posts-grid .post-entry {
+    width: 100%;
+    margin: 0;
+    position: relative;
+    cursor: pointer;
+}
+
+.posts-grid .post-entry:hover {
+    background: var(--border);
+}
+
+.posts-grid .entry-link {
+    position: absolute;
+    inset: 0;
+}
+
+.no-posts-yet {
+    color: var(--secondary);
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+}
+
+.find-more-posts {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1rem;
+}
+.find-more-posts p { color: var(--secondary); }
+.find-more-posts a { color: #0066cc; text-decoration: underline; font-weight: 500; }
+body.dark .find-more-posts a { color: #93cdff !important; }
+
+body.dark .post-entry header.entry-header h2 { color: white !important; }
+body.dark .post-entry div.entry-content { color: #dddddd !important; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var locations = [
+        {
+            name: "Evanston", region: "evanston", position: [42.0451, -87.6877],
+            companies: [
+                { name: "Northwestern", role: "CS, Math & HCI", position: [42.0565, -87.6753], description: "Undergraduate\nCS, Mathematics & Human-Computer Interaction" },
+                { name: "CrowdListen", role: "Founding Engineer", position: [42.0455, -87.6603], description: "Founding Engineer | 2024 - Present\nBuilding a shared context layer that turns social conversations into structured intelligence for AI agents." }
+            ]
+        },
+        {
+            name: "Shanghai", region: "shanghai", position: [31.2304, 121.4737],
+            companies: [
+                { name: "Home", role: "Hometown", position: [31.2304, 121.4737], description: "Born & Raised" }
+            ]
+        }
+    ];
+
+    var regions = ['evanston', 'shanghai'];
+    var currentRegionIndex = 0;
+    var markers = [];
+    var modal = document.getElementById('location-modal');
+    var modalTitle = document.getElementById('modal-title');
+    var modalDescription = document.getElementById('modal-description');
+    var nextButton = document.getElementById('next-location');
+
+    var regionZooms = { 'evanston': 14, 'shanghai': 12 };
+
+    function updateMapView(region) {
+        markers.forEach(function(m) { m.remove(); });
+        markers.length = 0;
+
+        var location = locations.find(function(l) { return l.region === region; });
+        if (!location) return;
+
+        map.setZoom(regionZooms[region], { animate: false });
+
+        location.companies.forEach(function(company) {
+            var cardIcon = L.divIcon({
+                html: '<div class="map-card"><h4>' + company.name + '</h4><p>' + company.role + '</p></div>',
+                className: 'map-marker',
+                iconSize: [200, 80]
+            });
+
+            var marker = L.marker(company.position, { icon: cardIcon, zIndexOffset: 1000 }).addTo(map);
+            marker.on('click', function(e) {
+                e.originalEvent.stopPropagation();
+                showLocationModal(company);
+                return false;
+            });
+            markers.push(marker);
+        });
+
+        smoothMove(location.position);
+    }
+
+    var map = L.map('journey-map', {
+        center: locations[0].position,
+        zoom: regionZooms['evanston'],
+        zoomControl: false,
+        attributionControl: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        dragging: false
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '' }).addTo(map);
+
+    function smoothMove(targetPosition) {
+        var startPosition = map.getCenter();
+        var startTime = performance.now();
+        var duration = 1000;
+        function animate(currentTime) {
+            var elapsed = currentTime - startTime;
+            var progress = Math.min(elapsed / duration, 1);
+            var ease = progress < 0.5 ? 4*progress*progress*progress : 1 - Math.pow(-2*progress+2, 3)/2;
+            var lat = startPosition.lat + (targetPosition[0] - startPosition.lat) * ease;
+            var lng = startPosition.lng + (targetPosition[1] - startPosition.lng) * ease;
+            map.setView([lat, lng], map.getZoom(), { animate: false, noMoveStart: true, noMoveEnd: true });
+            if (progress < 1) requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    }
+
+    function showLocationModal(company) {
+        modalTitle.textContent = company.name;
+        var lines = company.description.split('\n');
+        modalDescription.innerHTML = '<div class="company-details">' +
+            lines.map(function(line, i) { return i === 0 ? '<p><strong>' + line + '</strong></p>' : '<p>' + line + '</p>'; }).join('') +
+            '</div>';
+        modal.style.display = 'flex';
+    }
+
+    nextButton.addEventListener('click', function() {
+        currentRegionIndex = (currentRegionIndex + 1) % regions.length;
+        updateMapView(regions[currentRegionIndex]);
+    });
+
+    updateMapView('evanston');
+
+    modal.addEventListener('click', function(e) { if (e.target === modal) modal.style.display = 'none'; });
+    document.querySelector('.modal-close').addEventListener('click', function() { modal.style.display = 'none'; });
+});
+</script>
+{{ end }}

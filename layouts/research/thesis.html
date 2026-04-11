@@ -1,0 +1,238 @@
+{{ define "main" }}
+{{- $category := .Params.thesis_category -}}
+{{- $posts := where (where (where .Site.RegularPages "Section" "posts") ".Params.tags" "intersect" (slice "Research")) "Params.categories" $category -}}
+{{- $activePosts := where $posts ".Params.archived" "!=" true -}}
+{{- $featured := sort (where $activePosts ".Params.thesis_featured" true) "Params.featured_rank" "asc" -}}
+{{- $others := sort (where $activePosts ".Params.thesis_featured" "!=" true) "Date" "desc" -}}
+{{- $allPosts := $featured | append $others -}}
+
+<div class="thesis-page">
+  <nav class="thesis-nav" id="thesisNav">
+    <a href="/research/" class="thesis-nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      All Research
+    </a>
+    <div class="thesis-nav-title">
+      <h2>{{ .Title }}</h2>
+      <p>{{ .Params.description }}</p>
+    </div>
+    {{ if .Params.work_focus }}
+    <div class="thesis-nav-work">
+      <span class="work-label">Work focus</span>
+      <span class="work-value">{{ .Params.work_focus }}</span>
+    </div>
+    {{ end }}
+    <div class="thesis-nav-sections">
+      {{ if .Content }}
+      <a href="#section-overview" class="thesis-nav-link active" data-index="overview">
+        <span class="nav-number">0</span>
+        <span class="nav-text">
+          <span class="nav-title">Overview</span>
+        </span>
+      </a>
+      {{ end }}
+      {{ range $index, $post := $allPosts }}
+      <a href="#section-{{ $index }}" class="thesis-nav-link" data-index="{{ $index }}">
+        <span class="nav-number">{{ add $index 1 }}</span>
+        <span class="nav-text">
+          <span class="nav-title">{{ $post.Title }}</span>
+          <span class="nav-date">{{ $post.Date.Format "Jan 2006" }}</span>
+        </span>
+      </a>
+      {{ end }}
+    </div>
+  </nav>
+
+  <div class="thesis-content-area">
+    {{ if .Content }}
+    <section class="thesis-section" id="section-overview">
+      <header class="thesis-section-header">
+        <h2>{{ .Title }}</h2>
+      </header>
+      <div class="thesis-section-body">
+        {{ .Content }}
+      </div>
+    </section>
+    {{ end }}
+
+    {{ range $index, $post := $allPosts }}
+    <section class="thesis-section" id="section-{{ $index }}">
+      <header class="thesis-section-header">
+        <div class="thesis-section-meta">
+          <span class="section-number">{{ add $index 1 }} of {{ len $allPosts }}</span>
+          <time>{{ $post.Date.Format "January 2, 2006" }}</time>
+        </div>
+        <h2>{{ $post.Title }}</h2>
+        {{ if $post.Description }}
+        <p class="thesis-section-desc">{{ $post.Description }}</p>
+        {{ end }}
+      </header>
+      <div class="thesis-section-body">
+        {{ $post.Content }}
+      </div>
+    </section>
+    {{ end }}
+  </div>
+</div>
+
+<button class="thesis-mobile-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/></svg>
+</button>
+<div class="thesis-nav-overlay" id="navOverlay"></div>
+
+<style>
+  .main { max-width: none; padding: 0; }
+
+  .thesis-page {
+    display: flex;
+    min-height: calc(100vh - 80px);
+    max-width: calc(var(--content-width, 900px) + 320px);
+    margin: 0 auto;
+  }
+
+  .thesis-nav {
+    width: 320px; min-width: 320px; position: sticky; top: 0;
+    height: 100vh; overflow-y: auto; padding: 2rem 1.5rem;
+    border-right: 1px solid var(--border); background: var(--theme);
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+
+  .thesis-nav::-webkit-scrollbar { width: 4px; }
+  .thesis-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .thesis-nav-back {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    color: var(--secondary); text-decoration: none; font-size: 0.85rem;
+    margin-bottom: 1.5rem; transition: color 0.2s;
+  }
+  .thesis-nav-back:hover { color: var(--primary); }
+
+  .thesis-nav-title h2 { font-size: 1.4rem; font-weight: 700; color: var(--primary); margin: 0 0 0.5rem 0; }
+  .thesis-nav-title p { font-size: 0.85rem; color: var(--secondary); line-height: 1.5; margin: 0 0 1rem 0; }
+
+  .thesis-nav-work {
+    padding: 0.75rem; background: var(--code-bg);
+    border-radius: 8px; margin-bottom: 1.5rem;
+  }
+  .work-label { display: block; font-size: 0.75rem; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+  .work-value { font-size: 0.85rem; color: var(--primary); font-weight: 500; line-height: 1.4; }
+
+  .thesis-nav-sections { display: flex; flex-direction: column; gap: 2px; }
+
+  .thesis-nav-link {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 0.75rem; border-radius: 8px; text-decoration: none;
+    transition: all 0.2s; position: relative;
+  }
+  .thesis-nav-link:hover { background: var(--code-bg); }
+  .thesis-nav-link.active { background: var(--code-bg); }
+  .thesis-nav-link.active::before {
+    content: ''; position: absolute; left: 0; top: 0.5rem; bottom: 0.5rem;
+    width: 3px; background: var(--primary); border-radius: 2px;
+  }
+
+  .nav-number {
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; min-width: 24px; border-radius: 50%;
+    background: var(--border); color: var(--secondary);
+    font-size: 0.75rem; font-weight: 600; margin-top: 1px;
+  }
+  .thesis-nav-link.active .nav-number { background: var(--primary); color: var(--theme); }
+
+  .nav-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .nav-title { font-size: 0.85rem; color: var(--primary); font-weight: 500; line-height: 1.4; }
+  .nav-date { font-size: 0.7rem; color: var(--secondary); margin-top: 0.15rem; }
+
+  .thesis-content-area { flex: 1; min-width: 0; padding: 2rem 1rem; }
+
+  .thesis-section { padding-bottom: 3rem; margin-bottom: 3rem; border-bottom: 1px solid var(--border); }
+  .thesis-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .thesis-section-header { margin-bottom: 2rem; }
+  .thesis-section-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+  .section-number { font-size: 0.8rem; color: var(--secondary); font-weight: 500; padding: 0.15rem 0.5rem; background: var(--code-bg); border-radius: 4px; }
+  .thesis-section-meta time { font-size: 0.85rem; color: var(--secondary); }
+
+  .thesis-section-header h2 { font-size: 1.6rem; font-weight: 700; color: var(--primary); margin: 0 0 0.75rem 0; line-height: 1.3; }
+  .thesis-section-desc { font-size: 0.95rem; color: var(--secondary); line-height: 1.6; margin: 0; }
+
+  .thesis-section-body { color: var(--content); line-height: 1.8; font-size: 0.95rem; }
+  .thesis-section-body h2 { font-size: 1.3rem; font-weight: 600; color: var(--primary); margin: 2rem 0 1rem; }
+  .thesis-section-body h3 { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin: 1.5rem 0 0.75rem; }
+  .thesis-section-body p { margin: 0 0 1rem 0; }
+  .thesis-section-body img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+  .thesis-section-body blockquote { border-left: 3px solid var(--border); padding-left: 1rem; color: var(--secondary); margin: 1rem 0; }
+  .thesis-section-body ul, .thesis-section-body ol { margin: 0 0 1rem 0; padding-left: 1.5rem; }
+  .thesis-section-body strong { color: var(--primary); }
+
+  .pdf-download {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    margin-top: 1rem; padding: 0.4rem 1rem; font-size: 0.85rem;
+    color: var(--primary); text-decoration: none;
+    border: 1px solid var(--border); border-radius: 8px; transition: all 0.15s;
+  }
+  .pdf-download:hover { background: var(--code-bg); border-color: var(--primary); }
+
+  .thesis-mobile-toggle {
+    display: none; position: fixed; bottom: 1.5rem; right: 1.5rem;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--primary); color: var(--theme); border: none;
+    cursor: pointer; z-index: 100; align-items: center; justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+
+  .thesis-nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
+  .thesis-nav-overlay.active { display: block; }
+
+  @media (max-width: 900px) {
+    .thesis-page { flex-direction: column; }
+    .thesis-nav {
+      width: 100%; min-width: 100%; position: fixed; top: 0; left: 0;
+      height: 100vh; z-index: 200; transform: translateX(-100%);
+      transition: transform 0.3s ease; border-right: none;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+    }
+    .thesis-nav.open { transform: translateX(0); }
+    .thesis-content-area { padding: 1.5rem; max-width: 100%; }
+    .thesis-mobile-toggle { display: flex; }
+    .thesis-section-header h2 { font-size: 1.3rem; }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var sections = document.querySelectorAll('.thesis-section');
+  var navLinks = document.querySelectorAll('.thesis-nav-link');
+  var nav = document.getElementById('thesisNav');
+  var toggle = document.getElementById('mobileNavToggle');
+  var overlay = document.getElementById('navOverlay');
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id.replace('section-', '');
+        navLinks.forEach(function(link) { link.classList.toggle('active', link.dataset.index === id); });
+      }
+    });
+  }, { rootMargin: '-12% 0px -72% 0px', threshold: 0 });
+
+  sections.forEach(function(s) { observer.observe(s); });
+
+  navLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        navLinks.forEach(function(l) { l.classList.remove('active'); });
+        this.classList.add('active');
+        window.scrollTo(0, target.getBoundingClientRect().top + window.pageYOffset - 12);
+        if (window.innerWidth <= 900) { nav.classList.remove('open'); overlay.classList.remove('active'); }
+      }
+    });
+  });
+
+  if (toggle) toggle.onclick = function() { nav.classList.toggle('open'); overlay.classList.toggle('active'); };
+  if (overlay) overlay.onclick = function() { nav.classList.remove('open'); overlay.classList.remove('active'); };
+});
+</script>
+{{ end }}

@@ -1,0 +1,268 @@
+{{ define "main" }}
+<div class="photography-page">
+  <header class="photography-header">
+    <h1>Photography</h1>
+    <p class="photography-subtitle">moments captured through my lens</p>
+    <div class="photography-themes">
+      <span class="theme-pill">sunsets & sunrises by the sea</span>
+      <span class="theme-pill">milky way</span>
+    </div>
+  </header>
+
+  <div class="gallery-masonry" id="gallery"></div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <button class="lightbox-prev" id="lightboxPrev">&#8249;</button>
+  <button class="lightbox-next" id="lightboxNext">&#8250;</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+</div>
+
+<style>
+  .photography-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 0 4rem;
+  }
+
+  .photography-header {
+    margin-bottom: 3rem;
+  }
+
+  .photography-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.03em;
+  }
+
+  .photography-subtitle {
+    color: var(--secondary);
+    font-size: 1.05rem;
+    font-style: italic;
+    margin: 0 0 1.25rem;
+  }
+
+  .photography-themes {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .theme-pill {
+    padding: 0.3rem 0.9rem;
+    background: var(--code-bg, var(--entry));
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 0.82rem;
+    color: var(--primary);
+    font-weight: 500;
+  }
+
+  .gallery-masonry {
+    column-count: 3;
+    column-gap: 10px;
+  }
+
+  @media (max-width: 900px) {
+    .gallery-masonry { column-count: 2; column-gap: 8px; }
+  }
+
+  @media (max-width: 500px) {
+    .gallery-masonry { column-count: 1; }
+    .photography-page { padding: 1rem; }
+  }
+
+  .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    line-height: 0;
+    position: relative;
+  }
+
+  .gallery-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    transition: background 0.2s;
+    border-radius: 6px;
+  }
+
+  .gallery-item:hover::after {
+    background: rgba(0,0,0,0.08);
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .lightbox.active { display: flex; }
+
+  .lightbox-img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    cursor: default;
+    user-select: none;
+  }
+
+  .lightbox-close {
+    position: fixed;
+    top: 1rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 2.5rem;
+    cursor: pointer;
+    z-index: 2001;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .lightbox-close:hover { color: white; }
+
+  .lightbox-prev,
+  .lightbox-next {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 3rem;
+    cursor: pointer;
+    z-index: 2001;
+    padding: 1rem;
+    transition: color 0.15s;
+  }
+
+  .lightbox-prev { left: 1rem; }
+  .lightbox-next { right: 1rem; }
+  .lightbox-prev:hover, .lightbox-next:hover { color: white; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var priorityPhotos = [
+    '车站堆栈后 3.jpg',
+    '2bf1b56b876c3211e36e2487a54c8ff4.jpg',
+    '3cf111eee90a4d5e12922822dab8faef.jpg',
+    'IMG_8345 2.jpg',
+    'DSC08670.jpg',
+    'DSC08514.jpg',
+    'DSC03515-2.jpg',
+    'DSC08544.jpg',
+    'DSC08568.jpg',
+    'DSC08574.jpg',
+    'DSC08631.jpg',
+    'DSC08604 2.jpg',
+    'DSC08491.jpg',
+    'DSC08472.jpg',
+    'DSC08398.jpg',
+    'DSC08394.jpg',
+    'DSC08384.jpg',
+    'DSC08351.jpg',
+    'DSC07942.jpg',
+    'DSC07926.jpg',
+    'DSC07854.jpg',
+    'DSC07684.jpg',
+    'DSC07568.jpg',
+    'DSC06571.jpg',
+    'DSC06831.jpg',
+    'DSC07387.jpg'
+  ];
+
+  var allPhotos = [
+    {{ range $files := readDir "/static/photos" }}
+    {{ if or (strings.HasSuffix .Name ".jpg") (strings.HasSuffix .Name ".JPG") (strings.HasSuffix .Name ".jpeg") (strings.HasSuffix .Name ".png") }}
+    '{{ .Name }}',
+    {{ end }}
+    {{ end }}
+  ];
+
+  var gallery = document.getElementById('gallery');
+
+  var remaining = allPhotos.filter(function(p) { return priorityPhotos.indexOf(p) === -1; });
+  for (var i = remaining.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = remaining[i]; remaining[i] = remaining[j]; remaining[j] = t;
+  }
+
+  var ordered = priorityPhotos.filter(function(p) { return allPhotos.indexOf(p) !== -1; }).concat(remaining);
+
+  ordered.forEach(function(photo) {
+    var item = document.createElement('div');
+    item.className = 'gallery-item';
+    var img = document.createElement('img');
+    img.src = '/photos/' + encodeURIComponent(photo);
+    img.alt = 'Photography by Forrest Chai';
+    img.loading = 'lazy';
+    item.appendChild(img);
+    gallery.appendChild(item);
+  });
+
+  // Lightbox with navigation
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var currentIdx = 0;
+
+  function openLightbox(idx) {
+    currentIdx = idx;
+    lightboxImg.src = '/photos/' + encodeURIComponent(ordered[idx]);
+    lightbox.classList.add('active');
+  }
+
+  gallery.addEventListener('click', function(e) {
+    var item = e.target.closest('.gallery-item');
+    if (!item) return;
+    var items = gallery.querySelectorAll('.gallery-item');
+    for (var i = 0; i < items.length; i++) {
+      if (items[i] === item) { openLightbox(i); break; }
+    }
+  });
+
+  document.getElementById('lightboxPrev').onclick = function(e) {
+    e.stopPropagation();
+    currentIdx = (currentIdx - 1 + ordered.length) % ordered.length;
+    lightboxImg.src = '/photos/' + encodeURIComponent(ordered[currentIdx]);
+  };
+
+  document.getElementById('lightboxNext').onclick = function(e) {
+    e.stopPropagation();
+    currentIdx = (currentIdx + 1) % ordered.length;
+    lightboxImg.src = '/photos/' + encodeURIComponent(ordered[currentIdx]);
+  };
+
+  lightbox.onclick = function(e) { if (e.target !== lightboxImg) lightbox.classList.remove('active'); };
+  document.getElementById('lightboxClose').onclick = function() { lightbox.classList.remove('active'); };
+  document.addEventListener('keydown', function(e) {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') lightbox.classList.remove('active');
+    if (e.key === 'ArrowLeft') { currentIdx = (currentIdx-1+ordered.length)%ordered.length; lightboxImg.src='/photos/'+encodeURIComponent(ordered[currentIdx]); }
+    if (e.key === 'ArrowRight') { currentIdx = (currentIdx+1)%ordered.length; lightboxImg.src='/photos/'+encodeURIComponent(ordered[currentIdx]); }
+  });
+});
+</script>
+{{ end }}
