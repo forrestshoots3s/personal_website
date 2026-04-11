@@ -7,7 +7,7 @@ categories: "crowdlisten"
 tags: ["Product", "AI Agents", "MCP", "API Design"]
 keywords: ["REST API", "MCP", "Model Context Protocol", "OpenAPI", "skill documents", "AI agents", "agent architecture"]
 thesis_featured: true
-featured_rank: 2
+featured_rank: 3
 ---
 
 As AI agents move from demo toys to production infrastructure, the question of how they connect to backend services has become a serious architectural decision. There are currently two dominant strategies: exposing capabilities through REST APIs paired with structured skill documents, and exposing capabilities through MCP (Model Context Protocol) servers. The popular framing — that REST is legacy and MCP is the future — oversimplifies the tradeoff. REST APIs, particularly when backed by machine-readable specifications like OpenAPI, offer strong contracts, broad compatibility, and mature tooling. MCP offers agent-native tool discovery, session-aware invocation, and push-based capability updates designed specifically for LLM tool use. Neither subsumes the other. This essay examines the two strategies across three dimensions — contract strength, orchestration control, and adaptability to code changes — and argues that the right choice depends on who your consumers are, what granularity they need, and how much backend volatility you expect them to absorb.

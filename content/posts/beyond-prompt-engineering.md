@@ -7,7 +7,7 @@ categories: "crowdlisten"
 tags: ["Product", "AI Agents", "Harness Engineering", "Context Engineering"]
 keywords: ["prompt engineering", "context engineering", "harness engineering", "AI agents", "agent architecture", "managed agents"]
 thesis_featured: true
-featured_rank: 1
+featured_rank: 2
 ---
 
 Much of the early conversation around applied AI focused on prompt engineering: if the output was weak, the prompt needed improvement. Recent work in agent engineering suggests a broader shift. Prompt engineering still matters, yet it now functions as only one layer in a larger system. Context engineering determines what information the model sees, when it sees it, and what gets preserved across work. Harness engineering goes further still: it defines the runtime environment, verification loops, handoff artifacts, decomposition strategy, and coordination structures that allow an agent to work productively across long horizons rather than a single short session. Anthropic's recent engineering posts trace this progression clearly, from context curation to initializer agents, structured progress files, parallel agent teams, planner-generator-evaluator loops, and decoupled execution architectures. This essay argues that the next generation of AI products will be differentiated less by clever prompts alone than by the systems built around model reasoning (Anthropic Engineering, 2025a; Anthropic Engineering, 2025b; Anthropic Engineering, 2026a; Anthropic Engineering, 2026b; Anthropic Engineering, 2026c).
