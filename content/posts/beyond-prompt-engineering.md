@@ -4,7 +4,7 @@ date: 2026-04-11
 author: "Forrest Chai"
 description: "Prompt engineering has been demoted from the whole problem to one layer of the stack. Context engineering decides what the model can think with. Harness engineering decides whether that thinking becomes durable work."
 categories: "crowdlisten"
-tags: ["Product"]
+tags: ["Product", "AI Agents", "Harness Engineering", "Context Engineering"]
 keywords: ["prompt engineering", "context engineering", "harness engineering", "AI agents", "agent architecture", "managed agents"]
 thesis_featured: true
 featured_rank: 1
