@@ -1,6 +1,6 @@
 ---
 title: "The Best and Worst Time to Be an AI Builder: Lessons I Already Learned Before Starting to Build My First Independent Product"
-date: 2026-04-11
+date: 2026-03-28
 author: "Forrest Chai"
 description: "Before building my first product, I spent a week trying to find a defensible position in AI-assisted patent work. I didn't find one. But I learned something more valuable about what it actually takes to compete."
 categories: "indie"
