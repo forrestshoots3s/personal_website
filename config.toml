@@ -13,7 +13,7 @@ enableRobotsTXT = true
   filename = "sitemap.xml"
 
 [params]
-  description = "CS, Math & HCI @ Northwestern. Regeneron STS Scholar '25. Founding engineer building CrowdListen - turning social conversations into structured intelligence for AI agents."
+  description = "CS, Math & HCI @ Northwestern. Regeneron STS Scholar '25. Founding AI engineer building CrowdListen - turning social conversations into structured intelligence for AI agents."
   author = "Forrest Chai"
   env = "production"
   keywords = ["AI", "Machine Learning", "Product Engineering", "Mathematical Modeling", "CrowdListen", "Research"]

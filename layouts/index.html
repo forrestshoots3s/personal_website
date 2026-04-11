@@ -9,8 +9,8 @@
 <!-- About Me Section -->
 <h2>About Me</h2>
 <div class="about-section">
-    <p>CS, Math & HCI @ Northwestern. Regeneron Science Talent Search Scholar '25. Founding engineer at <a href="https://crowdlisten.com" target="_blank">CrowdListen</a>, building the shared context layer that turns social conversations into structured intelligence for AI agents.</p>
-    <p>My research spans drug-drug interaction prediction with graph neural networks and mathematical modeling competitions. In my free time, I photograph sunsets by the sea and chase the Milky Way. Always happy to chat.</p>
+    <p>CS, Math & HCI @ Northwestern. Regeneron Science Talent Search Scholar '25. Founding AI engineer at <a href="https://crowdlisten.com" target="_blank">CrowdListen</a>, building the shared context layer that turns social conversations into structured intelligence for AI agents.</p>
+    <p>My research spans drug-drug interaction prediction with gated message passing neural networks and mathematical modeling competitions. In my free time, I photograph sunsets by the sea and chase the Milky Way. Always happy to chat.</p>
 
     <div class="map-section">
         <div id="journey-map"></div>
@@ -48,6 +48,12 @@
         <h2 id="modal-title"></h2>
         <div id="modal-description"></div>
     </div>
+</div>
+
+<!-- Photography Banner -->
+<div class="photo-banner">
+    <img src="/photos/00EADF9C-065C-4676-91C8-79ADF4DA90B2.jpg" alt="Milky Way by Forrest Chai" loading="lazy" />
+    <a href="/photography/" class="photo-banner-link">View Photography &rarr;</a>
 </div>
 
 <!-- Recent Posts Section -->
@@ -262,6 +268,50 @@ h2 {
 
 .leaflet-control-attribution { display: none !important; }
 
+.photo-banner {
+    position: relative;
+    margin: 3rem -1rem;
+    border-radius: 12px;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.photo-banner img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    object-position: center 40%;
+    display: block;
+    filter: brightness(0.85);
+    transition: filter 0.3s;
+}
+
+.photo-banner:hover img {
+    filter: brightness(0.75);
+}
+
+.photo-banner-link {
+    position: absolute;
+    bottom: 1rem;
+    right: 1.5rem;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.photo-banner-link:hover {
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .photo-banner { margin: 2rem -0.5rem; }
+    .photo-banner img { height: 160px; }
+}
+
 .recent-posts {
     margin: 3rem 0;
     width: 100%;
@@ -317,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
             name: "Evanston", region: "evanston", position: [42.0451, -87.6877],
             companies: [
                 { name: "Northwestern", role: "CS, Math & HCI", position: [42.0565, -87.6753], description: "Undergraduate\nCS, Mathematics & Human-Computer Interaction" },
-                { name: "CrowdListen", role: "Founding Engineer", position: [42.0455, -87.6603], description: "Founding Engineer | 2024 - Present\nBuilding a shared context layer that turns social conversations into structured intelligence for AI agents." }
+                { name: "CrowdListen", role: "Founding AI Engineer", position: [42.0455, -87.6603], description: "Founding AI Engineer | 2024 - Present\nBuilding a shared context layer that turns social conversations into structured intelligence for AI agents." }
             ]
         },
         {

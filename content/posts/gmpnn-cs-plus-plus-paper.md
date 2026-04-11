@@ -5,7 +5,7 @@ author: "Forrest Chai"
 description: "The proposed GMPNN-CS++ model introduces a dual-contrasting sampling approach and self-attention mechanism for DDI prediction, achieving 97% overall accuracy."
 categories: "gmpnn"
 tags: ["Research"]
-keywords: ["GMPNN-CS++", "drug-drug interaction", "graph neural network", "contrastive learning", "self-attention"]
+keywords: ["GMPNN-CS++", "drug-drug interaction", "gated message passing neural network", "contrastive learning", "self-attention"]
 thesis_featured: true
 featured_rank: 1
 ---
