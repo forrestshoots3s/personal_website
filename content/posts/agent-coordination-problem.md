@@ -7,7 +7,7 @@ categories: "crowdlisten"
 tags: ["Product", "AI Agents", "Multi-Agent Systems", "Context Engineering"]
 keywords: ["agent coordination", "multi-agent systems", "context layer", "AI agents", "shared context", "N squared problem", "CrowdListen"]
 thesis_featured: true
-featured_rank: 1
+featured_rank: 2
 ---
 
 Ramp's AI usage is up 6,300% from last year. 84% of the team uses coding agents weekly. Non-engineers account for 12% of all human-initiated PRs on their production codebase. They built 1,500+ internal apps in six weeks, from 800+ different builders. This is a single company. And it's not an outlier — it's a preview.
